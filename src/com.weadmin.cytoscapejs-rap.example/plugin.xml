@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.rap.ui.entrypoint">
+      <entrypoint
+            class="com.weadmin.cytoscapejs_rap.example.ExampleOne"
+            id="com.weadmin.cytoscapejs-rap.example.entrypoint1"
+            path="/hello">
+      </entrypoint>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.entrypoint">
+      <entrypoint
+            class="com.weadmin.cytoscapejs_rap.example.ExampleTwo"
+            id="com.weadmin.cytoscapejs-rap.example.entrypoint2"
+            path="/hello2">
+      </entrypoint>
+   </extension>
+
+</plugin>
