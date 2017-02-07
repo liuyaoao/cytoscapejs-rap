@@ -14,35 +14,27 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 			return new cytoscapejsgraph.cytoscapejshandler(properties);
 		},
 		destructor : "destroy",
-		methods: ["refreshAll","refreshSize","getModifiedSvgTxt"],
-		properties : ["svgSize", "spacing", "statuss", "interfaceNameList", "menudesc", "tooltipdata","svgTxt"],
+		methods: ["removeCells"],
+		properties : ["size"],
 		events : ["Selection"]
 	});
 
 	cytoscapejsgraph.cytoscapejshandler = function(properties) {
 		this._parent = rap.getObject(properties.parent);
-		bindAll(this, [ "resizeLayout", "onSend", "onRender","refreshSize","portBeSelected","getSizeFromSvg","svgInitializedCall","updateContainerSize"]);
+		bindAll(this, [ "destroy", "onSend", "onRender", "refreshSize", "updateContainerSize","resizeLayout"]);
 		this.element = document.createElement("div");
 		this.element.style.position = 'absolute';
 		this.element.style.top = '0';
 		this.element.style.left = '0';
-		this.element.style.overflow = 'auto';
-		// this.element.style.width = '100%';
-		// this.element.style.height = '100%';
+		this.element.style.width = '100%';
+		this.element.style.height = '100%';
+		// this.element.style.overflow = 'auto';
 		this._parent.append(this.element);
 		this._parent.addListener("Resize", this.resizeLayout);
 		this.ready = false;
-		this._svgTxt = "";
 		var area = this._parent.getClientArea();
 		this._svgSize = {width:area[2]||300,height:area[3]||300};
 
-		this._updatedata = true;
-		this._tooltipdesc = "";
-		this._menudesc = "";
-		this._tooltipDataMap = {};
-		this._interfaceNameList = [];
-		this._selectnodeid = "";
-		this._statussMap = {}; //指示灯的状态: 0down 1 up 2  Testing 3 Alarm 4 Other  5 Unknown
 		this._uniqueId = Math.random().toString(36).split(".")[1];
 		rap.on("render", this.onRender);
 
@@ -53,120 +45,28 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 			if (this.element.parentNode) {
 				rap.off("render", this.onRender);
 				// Creates the graph inside the given container
-
-				this.svgChartPanel = new cytoscapejsgraph.CytoscapeMainGraph({
+				this.mainGraph = new cytoscapejsgraph.CytoscapeMainGraph({
 					container:this.element,
-					uniqueId:this._uniqueId,
-					svgTxt:this._svgTxt,
-					statusMap:this._statussMap,
-					tooltipDataMap:this._tooltipDataMap,
-					interfaceNameList:this._interfaceNameList,
-					getModifiedSvgTxtCall:function(svgtxt){
-						_this.getModifiedSvgTxt(svgtxt);
-					},
-					portBeSelectedCall:function(eventName,svid,position){
-						_this.portBeSelected(eventName,svid, position);
-					}
+					uniqueId:this._uniqueId
 				});
-				this.getSizeFromSvg();
-				this.svgInitializedCall();
-				setTimeout(function(){ _this.updateContainerSize(); }, 200);
-				rap.getRemoteObject( this ).set( "svgSize", JSON.stringify(this._svgSize));
 				rap.on("send", this.onSend);
 				this.ready = true;
 			}
 		},
-
+		setSize:function(size){
+			this._size = size;
+		},
 		destroy : function () {
 			rap.off("send", this.onSend);
-			this.svgChartPanel && this.svgChartPanel.dispose();
+			this.mainGraph && this.mainGraph.dispose();
 			(this.element && this.element.parentNode) ? this.element.parentNode.removeChild(this.element): null;
 		},
 		onSend : function() {
 			// rap.getRemoteObject( this ).set( "model", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
 			// rap.getRemoteObject( this ).call( "handleCallRefreshData", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
 		},
-		setMenudesc : function (menudesc) {
-			this._menudesc = menudesc;
-		},
-		getMenudesc : function () {
-			return this._menudesc;
-		},
-		setInterfaceNameList : function (interfaceNameList) {
-			this._interfaceNameList = interfaceNameList;
-			this.svgChartPanel && this.svgChartPanel.updateInterfaceName(this._interfaceNameList);
-		},
-		setStatuss : function (statuss) {
-			this._statussMap = statuss;
-			this.svgChartPanel && this.svgChartPanel.updateStatus(this._statussMap);
-		},
-		setTooltipdata : function (tooltipdata) {
-			this._tooltipDataMap = tooltipdata;
-			this.svgChartPanel && this.svgChartPanel.updateTooltip(this._tooltipDataMap);
-		},
-		setSvgSize:function(svgSize){
-			this._svgSize = svgSize || "";
-		},
-		setSvgTxt:function(svgTxt){
-			this._svgTxt = svgTxt || "";
-		},
-		getModifiedSvgTxt:function(svgtxt){
-			this._svgTxt = svgtxt;//this.svgChartPanel.getModifiedSvgTxt();
-			rap.getRemoteObject( this ).set( "svgTxt", this._svgTxt);
-			var remoteObject = rap.getRemoteObject(this);
-			remoteObject.notify("Selection", {
-				"index" : "svgtxtchanged",
-				"data" : this._svgTxt
-			});
-		},
-		getSizeFromSvg:function(){
-			this._svgSize = this.svgChartPanel.getSize();
-		},
-		refreshAll:function(){ //更新所有显示。状态和提示。
-			// console.log('refreshAll!!!!!!!!!!');
-			var _this = this;
-			setTimeout(function(){
-				_this.svgChartPanel.updateStatus(_this._statussMap);
-				_this.svgChartPanel.updateTooltip(_this._tooltipDataMap);
-			},10);
-		},
-		// 当对端口有任何操作时触发服务端更新。svid 也就是nodeid,也即端口名（接口名）,position:鼠标的位置，
-		portBeSelected : function (eventName, svid, pos) {
-			this._selectnodeid = svid;
-			// switch(eventName){
-			// 	case "portport":
-			// 		console.log("端口( "+svid+" )被点击，查看端口详情！");
-			// 		break;
-			// 	case "openport":
-			// 		console.log("打开( "+svid+" )端口！");
-			// 		break;
-			// 	case "closeport":
-			// 		console.log("关闭( "+svid+" )端口！");
-			// 		break;
-			// 	case "deviceip":
-			// 		console.log("查看当前端口( "+svid+" )连接设备！");
-			// 		break;
-			// 	case "portmenu":
-			// 		console.log("show 端口菜单！");
-			// 		break;
-			// 	case "":
-			// 		console.log("不知道点了哪里了！");
-			// 		break;
-			// }
-			var remoteObject = rap.getRemoteObject(this);
-			remoteObject.notify("Selection", {
-				"index" : eventName,
-				"data" : svid,
-				"x":pos["left"],
-				"y":pos["top"]
-			});
-		},
-		svgInitializedCall:function(){
-			var remoteObject = rap.getRemoteObject(this);
-			remoteObject.notify("Selection", {
-				"index" : "svg_initialized",
-				"data" : "-1"
-			});
+		removeCells:function(){
+			//TODO
 		},
 		// 大小自适应
 		resizeLayout : function() {
@@ -180,7 +80,7 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 		},
 		refreshSize:function(obj){
 			this._svgSize = {width:obj.width,height:obj.height};
-			this.svgChartPanel.refreshSize(obj.width,obj.height);
+			this.mainGraph.refreshSize(obj.width,obj.height);
 		},
 		updateContainerSize:function(){
 			if(this.element.parentNode){

@@ -12,6 +12,8 @@ import org.eclipse.swt.internal.SWTEventListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 
 @SuppressWarnings("restriction")
 public class CytoscapeGraph extends SVWidgetBase {
@@ -30,8 +32,53 @@ public class CytoscapeGraph extends SVWidgetBase {
 
 	public CytoscapeGraph(Composite parent, int style) {
 		super(parent,style);
+		this.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.DEL){
+					removeCells();
+				}
+			}
+		});
 	}
 
+	public void removeCells(){
+		super.callRemoteMethod("removeCells", new JsonObject());
+	}
+	public void graphLayout(String type){
+		JsonObject obj = new JsonObject();
+		obj.add("type", type);
+		super.callRemoteMethod("graphLayout", obj);
+	}
+
+	public void insertVertex(String id, String value,double x,double y,double width,double height,String shape){
+		JsonObject obj = new JsonObject();
+		obj.set("id", id);
+		obj.set("value", value);
+		obj.set("x", x);
+		obj.set("y", y);
+		obj.set("width", width);
+		obj.set("height", height);
+		if (shape!=null)
+			obj.set("shape", shape);
+		super.callRemoteMethod("insertVertex", obj);
+	}
+
+	public void insertEdge(String id,String value,String source,String target){
+		JsonObject obj = new JsonObject();
+		obj.set("id", id);
+		obj.set("value", value);
+		obj.set("source", source);
+		obj.set("target", target);
+		super.callRemoteMethod("insertEdge", obj);
+	}
 
 	String getRemoteId() {
 		return remoteObject.getId();
