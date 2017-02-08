@@ -10,6 +10,7 @@
     init:function(options){
       this.container = options.container;
       this.uniqueId = options.uniqueId;
+      this.dispatchEventCall = options.dispatchEventCall;
       this.graphContainer = null;
       this.initElement();
     },
@@ -26,7 +27,8 @@
       $(this.container).append( element );
 
       setTimeout(function(){
-        _this.initGraph();
+        _this.initGraphOptions();
+        _this.initGraphExtension();
         _this.addEvent();
         // console.log("init completed!!");
       },10);
@@ -41,10 +43,16 @@
 
         if( evtTarget === cy ){  //在画布上鼠标的点击位置加一个节点。
             console.log('tap on background',event);
-            _this.addOneNode(cy,{x:event.cyPosition.x,y:event.cyPosition.y});
+            _this.dispatchEventCall("tapblank",{x:event.cyPosition.x,y:event.cyPosition.y});
         } else {
-          console.log('tap on some element');
+          // console.log('tap on some element');
         }
+      });
+      cy.on('tap', 'edge',function(event){ //click one edge line.
+        var evtTarget = event.cyTarget;
+        // cy.edges('.edgeSelected').removeClass("edgeSelected");
+        evtTarget.toggleClass('edgeSelected');
+        console.log('tap on edge: ',event);
       });
       cy.on('mouseover', 'node', function(evt){
         var node = evt.cyTarget;
@@ -55,10 +63,9 @@
         console.log( "mouse over event:" + node.id() );
       });
     },
-    initGraph:function(){
+    initGraphOptions:function(){
       var cy = cytoscape({
         container: document.getElementById('cytoscapegraph'),
-
         style: [
         {
           selector: 'node',
@@ -73,34 +80,123 @@
             'label': 'data(label)'
           }
         },
-
         {
           selector: 'edge',
           style: {
             'label': 'data(label)',
+            'curve-style': 'bezier',
             'width': 3,
-            'line-color': '#ccc'
+            'line-color': '#ccc',
+            'target-arrow-color': '#ccc',
+            'target-arrow-shape': 'triangle'
+          }
+        },
+        {
+          selector: '.edgeSelected', //设置被选中的样式。
+          style: {
+            'line-color':'#321',
+            'target-arrow-color': '#321',
+            'width':3
+          }
+        },
+        {
+          selector: '.top-center',
+          style: {
+            'text-valign': 'top',
+            'text-halign': 'center'
+          }
+        },
+        {
+          selector: '.bottom-center',
+          style: {
+            'text-valign': 'bottom',
+            'text-halign': 'center'
           }
         }],
         elements: [
-          { data: { label: 'top left' }, classes: 'top-left' },
-          { data: { label: 'hgffdgefds' }, classes: 'top-right' }
+          // { data: { label: 'top left' }, classes: 'top-left' },
+          // { data: { label: 'hgffdgefds' }, classes: 'top-right' }
         ]
 
       });
       this.cyInstance = cy;
+    },
+    initGraphExtension:function(){
+      var cy = this.cyInstance;
+      // the default values of each option are outlined below:
+      var defaults = {
+        preview: true, // whether to show added edges preview before releasing selection
+        stackOrder: 4, // Controls stack order of edgehandles canvas element by setting it's z-index
+        handleSize: 10, // the size of the edge handle put on nodes
+        handleColor: '#ff0000', // the colour of the handle and the line drawn from it
+        handleLineType: 'ghost', // can be 'ghost' for real edge, 'straight' for a straight line, or 'draw' for a draw-as-you-go line
+        handleLineWidth: 1, // width of handle line in pixels
+        handleIcon: false, // Pass an Image-object to use as icon on handle. Icons are resized according to zoom and centered in handle.
+        handleOutlineColor: '#000000', // the colour of the handle outline
+        handleOutlineWidth: 0, // the width of the handle outline in pixels
+        handleNodes: 'node', // selector/filter function for whether edges can be made from a given node
+        handlePosition: 'middle top', // sets the position of the handle in the format of "X-AXIS Y-AXIS" such as "left top", "middle top"
+        hoverDelay: 150, // time spend over a target node before it is considered a target selection
+        cxt: false, // whether cxt events trigger edgehandles (useful on touch)
+        enabled: true, // whether to start the extension in the enabled state
+        toggleOffOnLeave: true, // whether an edge is cancelled by leaving a node (true), or whether you need to go over again to cancel (false; allows multiple edges in one pass)
+        edgeType: function( sourceNode, targetNode ) {
+          // can return 'flat' for flat edges between nodes or 'node' for intermediate node between them
+          // returning null/undefined means an edge can't be added between the two nodes
+          return 'flat';
+        },
+        loopAllowed: function( node ) {
+          // for the specified node, return whether edges from itself to itself are allowed
+          return false;
+        },
+        nodeLoopOffset: -50, // offset for edgeType: 'node' loops
+        nodeParams: function( sourceNode, targetNode ) {
+          // for edges between the specified source and target
+          // return element object to be passed to cy.add() for intermediary node
+          return {};
+        },
+        edgeParams: function( sourceNode, targetNode, i ) {
+          // for edges between the specified source and target
+          // return element object to be passed to cy.add() for edge
+          // NB: i indicates edge index in case of edgeType: 'node'
+          return {};
+        },
+        start: function( sourceNode ) {
+          // fired when edgehandles interaction starts (drag on handle)
+        },
+        complete: function( sourceNode, targetNodes, addedEntities ) {
+          // fired when edgehandles is done and entities are added
+        },
+        stop: function( sourceNode ) {
+          // fired when edgehandles interaction is stopped (either complete with added edges or incomplete)
+        }
+      };
+      cy.edgehandles( defaults );
+
+      // 节点可改变大小
+      cy.nodeResize();
+  		cy.on("noderesize.resizestart", function (e, type) {
+  			console.log(type);
+  		});
+  		cy.on("noderesize.resizeend", function (e, type) {
+  			document.body.style.cursor = 'initial';
+  		});
     },
     getValueFromStr:function(str){
       var start = str.indexOf('(');
       var end = str.indexOf(')');
       return str.substring(start+1,end);
     },
-    addOneNode:function (cy,position){ //新增一个节点。
-      cy.add({
+    addOneNode:function (options){ //新增一个节点。
+      this.cyInstance.add({
           group: "nodes",
-          data: { weight: 75,label:"helloworld" },
-          position: { x: position.x, y: position.y }
+          data: { id:options.id,weight: options.width,height:options.height,label:options.value,'classes':'bottom-center' },
+          position: { x: options.x, y: options.y }
       });
+    },
+    removeSelected:function(){
+      this.cyInstance.nodes(":selected").remove();
+      this.cyInstance.edges(".edgeSelected").remove();
     },
     dispose:function(){
       // this.portNameDialog.dispose();

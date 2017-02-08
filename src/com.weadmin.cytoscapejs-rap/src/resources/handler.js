@@ -4,6 +4,9 @@
  *cytoscapejs library on rap
  *******************************/
 var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
+var mxBasePath = 'rwt-resources/cytoscapejshandler';
+var MXGRAPH_BASEPATH = "rwt-resources/cytoscapejshandler/";
+var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 (function() {
 	'use strict';
 	if (!window.cytoscapejsgraph) {
@@ -14,14 +17,15 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 			return new cytoscapejsgraph.cytoscapejshandler(properties);
 		},
 		destructor : "destroy",
-		methods: ["removeCells"],
+		methods: ["removeCells","addOneNode","graphLayout"],
 		properties : ["size"],
 		events : ["Selection"]
 	});
 
 	cytoscapejsgraph.cytoscapejshandler = function(properties) {
 		this._parent = rap.getObject(properties.parent);
-		bindAll(this, [ "destroy", "onSend", "onRender", "refreshSize", "updateContainerSize","resizeLayout"]);
+		bindAll(this, [ "destroy", "onSend", "onRender", "refreshSize", "updateContainerSize","resizeLayout",
+										"dispatchEvent","addOneNode"]);
 		this.element = document.createElement("div");
 		this.element.style.position = 'absolute';
 		this.element.style.top = '0';
@@ -34,7 +38,7 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 		this.ready = false;
 		var area = this._parent.getClientArea();
 		this._svgSize = {width:area[2]||300,height:area[3]||300};
-
+		this.mainGraph = null;
 		this._uniqueId = Math.random().toString(36).split(".")[1];
 		rap.on("render", this.onRender);
 
@@ -47,7 +51,10 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 				// Creates the graph inside the given container
 				this.mainGraph = new cytoscapejsgraph.CytoscapeMainGraph({
 					container:this.element,
-					uniqueId:this._uniqueId
+					uniqueId:this._uniqueId,
+					dispatchEventCall:function(evtName,opt){
+						_this.dispatchEvent(evtName,opt);
+					}
 				});
 				rap.on("send", this.onSend);
 				this.ready = true;
@@ -65,8 +72,31 @@ var DEVICEPANEL_RAP_BASEPATH = "rwt-resources/cytoscapejshandler/";
 			// rap.getRemoteObject( this ).set( "model", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
 			// rap.getRemoteObject( this ).call( "handleCallRefreshData", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
 		},
+		addOneNode:function(obj){
+			this.mainGraph.addOneNode(obj);
+		},
 		removeCells:function(){
+			this.mainGraph.removeSelected();
+		},
+		graphLayout:function(obj){
+			var type = obj.type;
 			//TODO
+		},
+		dispatchEvent : function (eventName,options) {
+			var remoteObject = rap.getRemoteObject(this);
+			if(eventName == "tapblank"){
+				remoteObject.notify("Selection", {
+					"text" : eventName,
+					"data":"",
+					"x":parseInt(options.x),
+					"y":parseInt(options.y)
+				});
+			}else{ //just dispatch a event name ,not params.
+				remoteObject.notify("Selection", {
+					"text" : eventName,
+					"data":""
+				});
+			}
 		},
 		// 大小自适应
 		resizeLayout : function() {

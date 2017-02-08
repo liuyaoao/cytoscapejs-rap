@@ -19,7 +19,7 @@ import org.eclipse.swt.events.KeyListener;
 public class CytoscapeGraph extends SVWidgetBase {
 
 	 @SuppressWarnings("unused")
-	private static final String REMOTE_TYPE = "svgdevicepanel.devicepanelsvgjs";
+	private static final String REMOTE_TYPE = "cytoscapejsgraph.cytoscapejshandler";
 	 private static final long serialVersionUID = -7580109674486263420L;
 	 private String sysObjId = "";
 	 private String svgTxt = "";
@@ -66,9 +66,10 @@ public class CytoscapeGraph extends SVWidgetBase {
 		obj.set("y", y);
 		obj.set("width", width);
 		obj.set("height", height);
-		if (shape!=null)
+		if (shape!=null){
 			obj.set("shape", shape);
-		super.callRemoteMethod("insertVertex", obj);
+		}
+		super.callRemoteMethod("addOneNode", obj);
 	}
 
 	public void insertEdge(String id,String value,String source,String target){
@@ -110,18 +111,16 @@ public class CytoscapeGraph extends SVWidgetBase {
 	}
 	@Override
 	protected void handleSetProp(JsonObject properties) {
-		JsonValue sizeValue = properties.get( "svgSize" );
-		JsonValue svgtxt = properties.get( "svgTxt" );
-    if( sizeValue != null ) {
-      String sizeStr = sizeValue.asString();
-			JsonObject obj = JsonObject.readFrom(sizeStr);
-			this.svgSize = obj;
-			// System.out.println("svgSize:"+sizeStr);
-    }
-		if( svgtxt != null ) {
-			this.svgTxt = svgtxt.asString();
-			// System.out.println("svgTxtChanged!!!");
-		}
+		// JsonValue sizeValue = properties.get( "svgSize" );
+		// JsonValue svgtxt = properties.get( "svgTxt" );
+    // if( sizeValue != null ) {
+    //   String sizeStr = sizeValue.asString();
+		// 	JsonObject obj = JsonObject.readFrom(sizeStr);
+		// 	this.svgSize = obj;
+    // }
+		// if( svgtxt != null ) {
+		// 	this.svgTxt = svgtxt.asString();
+		// }
 	}
 
 	@Override
@@ -133,15 +132,13 @@ public class CytoscapeGraph extends SVWidgetBase {
 	protected void handleCallNotify(String eventName, JsonObject parameters) {
 		if ("Selection".equals(eventName)) {
 			Event event = new Event();
-			event.text = parameters.get("index").asString();
+			event.text = parameters.get("text").asString();
 			event.data =  parameters.get("data").asString();
-
-			if(event.text.toLowerCase().equals("svgtxtchanged")){
-				event.data = this.svgTxtPrefix + parameters.get("data").asString();
-			}
-			if(event.text.toLowerCase().equals("portmenu") || event.text.toLowerCase().equals("portport")){
+			if(event.text.toLowerCase().equals("tapblank")){
 				event.x =  parameters.get("x").asInt();
 				event.y =  parameters.get("y").asInt();
+			}else if(event.text.toLowerCase().equals("xxxxx")){
+				//TODO
 			}
 			notifyListeners(SWT.Selection, event);
 		}
@@ -154,9 +151,19 @@ public class CytoscapeGraph extends SVWidgetBase {
 	@Override
 	protected ArrayList<CustomRes> getCustomRes() {
 		ArrayList<CustomRes> res = new ArrayList<>();
+		res.add(new CustomRes("images/earth.png", false, false));
+		res.add(new CustomRes("images/application.png", false, false));
+		res.add(new CustomRes("images/applications.png", false, false));
+		res.add(new CustomRes("images/equipment.png", false, false));
+		res.add(new CustomRes("images/server.png", false, false));
+		res.add(new CustomRes("images/servers.png", false, false));
+
 		res.add(new CustomRes("main.css", true, true));
 		res.add(new CustomRes("jquery.js", true, false));
+		res.add(new CustomRes("ocanvas.min.js", true, false));
 		res.add(new CustomRes("cytoscape.js", true, false));
+		res.add(new CustomRes("cytoscape-edgehandles.js", true, false));
+		res.add(new CustomRes("cytoscape-node-resize.js", true, false));
 //		res.add(new CustomRes("menuPanel.js", true, false));
 		res.add(new CustomRes("CytoscapeMainGraph.js", true, false));
 		res.add(new CustomRes("handler.js", true, false));
