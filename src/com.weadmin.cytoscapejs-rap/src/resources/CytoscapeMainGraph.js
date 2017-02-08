@@ -74,9 +74,7 @@
             'width': 40,
             'shape' : 'rectangle',
             'background-color': '#FFF',
-            'background-image':'rwt-resources/cytoscapejshandler/images/applications.png',
             // 'selection-box-color':'#932',
-            'background-fit':'cover',
             'label': 'data(label)'
           }
         },
@@ -107,6 +105,26 @@
           }
         },
         {
+          selector:'.imgServer',
+          style:{
+            'background-image':'rwt-resources/cytoscapejshandler/images/server.png',
+            'background-fit':'cover'
+          }
+        },
+        {
+          selector:'.imgServers',
+          style:{
+            'background-image':'rwt-resources/cytoscapejshandler/images/servers.png',
+            'background-fit':'cover'
+          }
+        },
+        {
+          selector:'.textRotation',
+          style:{
+            'text-rotation':'autorotate'
+          }
+        },
+        {
           selector: '.bottom-center',
           style: {
             'text-valign': 'bottom',
@@ -114,8 +132,9 @@
           }
         }],
         elements: [
-          // { data: { label: 'top left' }, classes: 'top-left' },
-          // { data: { label: 'hgffdgefds' }, classes: 'top-right' }
+          { data: {id:'node_server', label: 'server' }, position:{x:20,y:20}, classes: 'bottom-center imgServer' },
+          { data: {id:'node_servers', label: 'servers' },position:{x:60,y:60}, classes: 'bottom-center imgServers' },
+          { data: { id:'edge_server',source:'node_server',target:'node_servers', label: 'edge_server' },classes:'textRotation' }
         ]
 
       });
