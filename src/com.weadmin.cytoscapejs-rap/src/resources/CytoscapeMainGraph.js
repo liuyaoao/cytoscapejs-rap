@@ -12,6 +12,7 @@
       this.uniqueId = options.uniqueId;
       this.dispatchEventCall = options.dispatchEventCall;
       this.graphContainer = null;
+      this.initGraphCfg = '';
       this.initElement();
     },
     initElement:function(){
@@ -132,9 +133,9 @@
           }
         }],
         elements: [
-          { data: {id:'node_server', label: 'server' }, position:{x:20,y:20}, classes: 'bottom-center imgServer' },
-          { data: {id:'node_servers', label: 'servers' },position:{x:60,y:60}, classes: 'bottom-center imgServers' },
-          { data: { id:'edge_server',source:'node_server',target:'node_servers', label: 'edge_server' },classes:'textRotation' }
+          // { data: {id:'node_server', label: 'server' }, position:{x:20,y:20}, classes: 'bottom-center imgServer' },
+          // { data: {id:'node_servers', label: 'servers' },position:{x:60,y:60}, classes: 'bottom-center imgServers' },
+          // { data: { id:'edge_server',source:'node_server',target:'node_servers', label: 'edge_server' },classes:'textRotation' }
         ]
 
       });
@@ -201,6 +202,11 @@
   			document.body.style.cursor = 'initial';
   		});
     },
+    loadGraphByJson:function(json){
+      json = json.replace(/\n/g,"\\n");
+      var sttr = json.substr(json.indexOf("'")+1,json.lastIndexOf("'")-1);
+      this.cyInstance.json(JSON.parse(sttr));
+    },
     getValueFromStr:function(str){
       var start = str.indexOf('(');
       var end = str.indexOf(')');
@@ -212,6 +218,9 @@
           data: { id:options.id,weight: options.width,height:options.height,label:options.value,'classes':'bottom-center' },
           position: { x: options.x, y: options.y }
       });
+    },
+    getGraphJson:function(){
+      return this.cyInstance.json();
     },
     removeSelected:function(){
       this.cyInstance.nodes(":selected").remove();

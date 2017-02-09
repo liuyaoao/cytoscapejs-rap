@@ -2,6 +2,8 @@ package com.weadmin.cytoscapejs_rap.example;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rap.json.JsonObject;
@@ -26,6 +28,8 @@ import com.weadmin.cytoscapejs_rap.CytoscapeGraph;
 public class ExampleOne extends AbstractEntryPoint{
 
 	private static final long serialVersionUID = 1L;
+	private String graphJson = "";
+	private CytoscapeGraph cyGraph = null;
 
 	@Override
 	protected void createContents(Composite parent) {
@@ -52,7 +56,7 @@ public class ExampleOne extends AbstractEntryPoint{
 		composite2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite2.setLayout(new GridLayout(1, false));
 
-		CytoscapeGraph cyGraph = new CytoscapeGraph(composite2, SWT.NONE);
+		cyGraph = new CytoscapeGraph(composite2, SWT.NONE);
 //		cyGraph.setBounds(20, 0, 1000, 600);
 		cyGraph.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -60,11 +64,21 @@ public class ExampleOne extends AbstractEntryPoint{
 			private static final long serialVersionUID = 1L;
 			public void handleEvent(Event event) {
 				String eventag = event.text;
+				String data = event.data.toString();
 				if (eventag.equals("tapblank")) {
 					String id = "nodeId_"+getRangeRandomNum(1,99999);
 					cyGraph.insertVertex(id,"node",event.x,event.y,40,40,null);
-				}else{
-					//TODO
+				}else if(eventag.equals("graph_initialized")){
+					getGraphJsonByFileName("json00");
+					cyGraph.loadGraphByJson(graphJson);
+				}else if(eventag.equals("savegraph")){
+					try {
+						FileUtils.writeStringToFile(new File("D:/liuyaoao/132.txt"), data,"utf-8");
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}else if(eventag.equals("xxxxxx")){
+
 				}
 			}
 		});
@@ -93,7 +107,7 @@ public class ExampleOne extends AbstractEntryPoint{
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
+				cyGraph.toSaveGraphJson(); //click save button.
 			}
 		});
 		Combo layout = new Combo(composite, SWT.DROP_DOWN);
@@ -136,6 +150,31 @@ public class ExampleOne extends AbstractEntryPoint{
 
 	}
 
+
+	public void getGraphJsonByFileName(String filename){
+//		ClassLoader classLoader = CytoscapeGraph.class.getClassLoader();
+		InputStream inputStream = this.getClass().getResourceAsStream("jsons/"+filename+".txt");
+		byte bt[] = new byte[5242880]; //最大可放5M大小字节
+    int len = 0;
+    int temp=0;          //所有读取的内容都使用temp接收
+		int startIndex = 0;
+    try {
+    	while((temp=inputStream.read())!=-1){    //当没有读取完时，继续读取
+          bt[len]=(byte)temp;
+          len++;
+      }
+      inputStream.close();
+    }catch(IOException ioe){
+    	throw new IllegalArgumentException("Failed to load resources", ioe);
+    }
+    try{
+    	graphJson = new String(bt,"UTF-8");
+			System.out.println("init graphJson:"+graphJson);
+    }catch(UnsupportedEncodingException e){
+    	throw new IllegalArgumentException("Failed to load resources", e);
+    }
+		cyGraph.setJsonTxt(graphJson);
+	}
 	public static String getRandom(int t){
 		int i = (int) (Math.random()*t);
 		String s = (i<10?"0"+i:i+"");

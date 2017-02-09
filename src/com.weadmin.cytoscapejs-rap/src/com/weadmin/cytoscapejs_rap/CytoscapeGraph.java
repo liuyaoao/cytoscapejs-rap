@@ -21,14 +21,8 @@ public class CytoscapeGraph extends SVWidgetBase {
 	 @SuppressWarnings("unused")
 	private static final String REMOTE_TYPE = "cytoscapejsgraph.cytoscapejshandler";
 	 private static final long serialVersionUID = -7580109674486263420L;
-	 private String sysObjId = "";
-	 private String svgTxt = "";
-	 private String svgTxtPrefix = ""; //svg files header,当重新写入svg的时候还要加上的。
-	 private JsonObject svgSize = null;
-	 private JsonObject statuss;
-	 private String menudesc;
-	 private JsonObject tooltipdata;
-	 private String[] interfaceNameList;
+	 private String tobeSaveJson = "";
+
 
 	public CytoscapeGraph(Composite parent, int style) {
 		super(parent,style);
@@ -49,6 +43,18 @@ public class CytoscapeGraph extends SVWidgetBase {
 		});
 	}
 
+	public void setJsonTxt(String josnTxt) {
+		this.tobeSaveJson = josnTxt;
+		remoteObject.set( "jsontxt", josnTxt );
+	}
+	public String getToBeSaveJson(){
+		return tobeSaveJson;
+	}
+	public void loadGraphByJson(String json){
+		JsonObject obj = new JsonObject();
+		obj.add("json", json);
+		super.callRemoteMethod("loadGraphByJson", obj);
+	}
 	public void removeCells(){
 		super.callRemoteMethod("removeCells", new JsonObject());
 	}
@@ -57,7 +63,9 @@ public class CytoscapeGraph extends SVWidgetBase {
 		obj.add("type", type);
 		super.callRemoteMethod("graphLayout", obj);
 	}
-
+	public void toSaveGraphJson(){
+		super.callRemoteMethod("toSaveGraphJson", new JsonObject());
+	}
 	public void insertVertex(String id, String value,double x,double y,double width,double height,String shape){
 		JsonObject obj = new JsonObject();
 		obj.set("id", id);
@@ -137,7 +145,9 @@ public class CytoscapeGraph extends SVWidgetBase {
 			if(event.text.toLowerCase().equals("tapblank")){
 				event.x =  parameters.get("x").asInt();
 				event.y =  parameters.get("y").asInt();
-			}else if(event.text.toLowerCase().equals("xxxxx")){
+			}else if(event.text.toLowerCase().equals("graph_initialized")){
+			}else if(event.text.toLowerCase().equals("savegraph")){
+			}else if(event.text.toLowerCase().equals("xxxxxxx")){
 				//TODO
 			}
 			notifyListeners(SWT.Selection, event);

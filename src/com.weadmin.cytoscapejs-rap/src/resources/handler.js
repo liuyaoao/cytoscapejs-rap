@@ -17,8 +17,8 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 			return new cytoscapejsgraph.cytoscapejshandler(properties);
 		},
 		destructor : "destroy",
-		methods: ["removeCells","addOneNode","graphLayout"],
-		properties : ["size"],
+		methods: ["removeCells","loadGraphByJson","addOneNode","graphLayout","toSaveGraphJson"],
+		properties : ["size","jsontxt"],
 		events : ["Selection"]
 	});
 
@@ -39,6 +39,7 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 		var area = this._parent.getClientArea();
 		this._svgSize = {width:area[2]||300,height:area[3]||300};
 		this.mainGraph = null;
+		this._jsontxt = '';
 		this._uniqueId = Math.random().toString(36).split(".")[1];
 		rap.on("render", this.onRender);
 
@@ -56,12 +57,18 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 						_this.dispatchEvent(evtName,opt);
 					}
 				});
+				setTimeout(function(){
+					_this.dispatchEvent("graph_initialized");
+				},100);
 				rap.on("send", this.onSend);
 				this.ready = true;
 			}
 		},
 		setSize:function(size){
 			this._size = size;
+		},
+		setJsontxt:function(jsontxt){
+			this._jsontxt = jsontxt;
 		},
 		destroy : function () {
 			rap.off("send", this.onSend);
@@ -71,6 +78,12 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 		onSend : function() {
 			// rap.getRemoteObject( this ).set( "model", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
 			// rap.getRemoteObject( this ).call( "handleCallRefreshData", "123456789"); //设置后端的值，还有其他两个方法:call(method,properties):调用后端的方法,notify(event,properties);
+		},
+		loadGraphByJson:function(obj){
+			this.mainGraph.loadGraphByJson(obj.json);
+		},
+		toSaveGraphJson:function(){
+			this.dispatchEvent("savegraph");
 		},
 		addOneNode:function(obj){
 			this.mainGraph.addOneNode(obj);
@@ -84,19 +97,25 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 		},
 		dispatchEvent : function (eventName,options) {
 			var remoteObject = rap.getRemoteObject(this);
-			if(eventName == "tapblank"){
-				remoteObject.notify("Selection", {
-					"text" : eventName,
-					"data":"",
-					"x":parseInt(options.x),
-					"y":parseInt(options.y)
-				});
-			}else{ //just dispatch a event name ,not params.
-				remoteObject.notify("Selection", {
-					"text" : eventName,
-					"data":""
-				});
+			var obj = {
+				"text" : eventName,
+				"data":""
+			};
+			switch(eventName){
+				case "tapblank":
+					obj.x = parseInt(options.x);
+					obj.y = parseInt(options.y);
+					break;
+				case "graph_initialized":
+					break;
+				case "savegraph":
+					obj.data = this.mainGraph.getGraphJson();
+					break;
+				case "":
+					break;
+				default:break;
 			}
+			remoteObject.notify("Selection", obj);
 		},
 		// 大小自适应
 		resizeLayout : function() {
