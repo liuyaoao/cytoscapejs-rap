@@ -67,77 +67,12 @@
     initGraphOptions:function(){
       var cy = cytoscape({
         container: document.getElementById('cytoscapegraph'),
-        style: [
-        {
-          selector: 'node',
-          style: {
-            'height': 40,
-            'width': 40,
-            'shape' : 'rectangle',
-            'background-color': '#FFF',
-            // 'selection-box-color':'#932',
-            'label': 'data(label)'
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'label': 'data(label)',
-            'curve-style': 'bezier',
-            'width': 3,
-            'line-color': '#ccc',
-            'target-arrow-color': '#ccc',
-            'target-arrow-shape': 'triangle'
-          }
-        },
-        {
-          selector: '.edgeSelected', //设置被选中的样式。
-          style: {
-            'line-color':'#321',
-            'target-arrow-color': '#321',
-            'width':3
-          }
-        },
-        {
-          selector: '.top-center',
-          style: {
-            'text-valign': 'top',
-            'text-halign': 'center'
-          }
-        },
-        {
-          selector:'.imgServer',
-          style:{
-            'background-image':'rwt-resources/cytoscapejshandler/images/server.png',
-            'background-fit':'cover'
-          }
-        },
-        {
-          selector:'.imgServers',
-          style:{
-            'background-image':'rwt-resources/cytoscapejshandler/images/servers.png',
-            'background-fit':'cover'
-          }
-        },
-        {
-          selector:'.textRotation',
-          style:{
-            'text-rotation':'autorotate'
-          }
-        },
-        {
-          selector: '.bottom-center',
-          style: {
-            'text-valign': 'bottom',
-            'text-halign': 'center'
-          }
-        }],
+        style:graphConfig.style,
         elements: [
           // { data: {id:'node_server', label: 'server' }, position:{x:20,y:20}, classes: 'bottom-center imgServer' },
           // { data: {id:'node_servers', label: 'servers' },position:{x:60,y:60}, classes: 'bottom-center imgServers' },
           // { data: { id:'edge_server',source:'node_server',target:'node_servers', label: 'edge_server' },classes:'textRotation' }
         ]
-
       });
       this.cyInstance = cy;
     },
@@ -206,6 +141,7 @@
       json = json.replace(/\n/g,"\\n");
       var sttr = json.substr(json.indexOf("'")+1,json.lastIndexOf("'")-1);
       this.cyInstance.json(JSON.parse(sttr));
+      this.cyInstance.json({style:graphConfig.style});
     },
     getValueFromStr:function(str){
       var start = str.indexOf('(');
@@ -215,12 +151,24 @@
     addOneNode:function (options){ //新增一个节点。
       this.cyInstance.add({
           group: "nodes",
-          data: { id:options.id,weight: options.width,height:options.height,label:options.value,'classes':'bottom-center' },
+          data: { id:options.id,weight: options.width,height:options.height,label:options.value },
+          classes:'bottom-center imgApplications',
           position: { x: options.x, y: options.y }
       });
     },
+    addOneEdge:function(opt){
+      this.cyInstance.add({
+          group: "edges",
+          data: { id:opt.source+""+opt.target,source: opt.source,target:opt.target,label:opt.value },
+          classes:'textRotation'
+      });
+      // this.graphLayout("circle");
+    },
+    graphLayout:function(layoutType){
+      this.cyInstance.layout(graphConfig["layout_"+layoutType]);
+    },
     getGraphJson:function(){
-      return this.cyInstance.json();
+      return "'"+JSON.stringify(this.cyInstance.json())+"'";
     },
     removeSelected:function(){
       this.cyInstance.nodes(":selected").remove();

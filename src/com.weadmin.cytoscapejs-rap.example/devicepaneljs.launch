@@ -38,5 +38,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="com.weadmin.cytoscapejs-rap.example@default:default,com.weadmin.cytoscapejs-rap@default:default"/>
+<stringAttribute key="workspace_bundles" value="com.weadmin.devicepanel-rap.example@default:default,com.weadmin.devicepanel-rap@default:default"/>
 </launchConfiguration>

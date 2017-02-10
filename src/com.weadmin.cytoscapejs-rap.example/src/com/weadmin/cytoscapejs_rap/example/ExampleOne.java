@@ -65,9 +65,11 @@ public class ExampleOne extends AbstractEntryPoint{
 			public void handleEvent(Event event) {
 				String eventag = event.text;
 				String data = event.data.toString();
-				if (eventag.equals("tapblank")) {
-					String id = "nodeId_"+getRangeRandomNum(1,99999);
-					cyGraph.insertVertex(id,"node",event.x,event.y,40,40,null);
+				if (eventag.equals("tapblank")) { //click add new node and edge.
+					String nodeId = "nodeId_"+getRangeRandomNum(1,99999);
+					String edgeId = "edgeId_"+getRangeRandomNum(1,99999);
+					cyGraph.insertVertex(nodeId,"node",event.x,event.y,40,40,null);
+					cyGraph.insertEdge(edgeId,"edge_label","node_servers",nodeId);
 				}else if(eventag.equals("graph_initialized")){
 					getGraphJsonByFileName("json00");
 					cyGraph.loadGraphByJson(graphJson);
@@ -112,7 +114,7 @@ public class ExampleOne extends AbstractEntryPoint{
 		});
 		Combo layout = new Combo(composite, SWT.DROP_DOWN);
 		layout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		layout.setItems(new String[]{"树型","圆型","堆型","随意","分层类型"});
+		layout.setItems(new String[]{"树型","圆型","堆型","随意","分层类型","网格"});
 		layout.setText("选择布局");
 		layout.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -127,16 +129,16 @@ public class ExampleOne extends AbstractEntryPoint{
 					cyGraph.graphLayout("circle");
 					break;
 				case 2:
-					cyGraph.graphLayout("stack");
+					cyGraph.graphLayout("concentric");
 					break;
 				case 3:
-					cyGraph.graphLayout("fast");
+					cyGraph.graphLayout("random");
 					break;
 				case 4:
-					cyGraph.graphLayout("hierarchical");
+					cyGraph.graphLayout("breadthfirst"); // breadthfirst == hierarchical
 					break;
 				case 5:
-					cyGraph.graphLayout("partition");
+					cyGraph.graphLayout("grid");
 					break;
 				default:
 					break;

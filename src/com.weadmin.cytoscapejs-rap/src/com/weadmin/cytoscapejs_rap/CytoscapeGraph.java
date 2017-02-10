@@ -86,7 +86,7 @@ public class CytoscapeGraph extends SVWidgetBase {
 		obj.set("value", value);
 		obj.set("source", source);
 		obj.set("target", target);
-		super.callRemoteMethod("insertEdge", obj);
+		super.callRemoteMethod("addOneEdge", obj);
 	}
 
 	String getRemoteId() {
@@ -161,6 +161,7 @@ public class CytoscapeGraph extends SVWidgetBase {
 	@Override
 	protected ArrayList<CustomRes> getCustomRes() {
 		ArrayList<CustomRes> res = new ArrayList<>();
+		// images resource
 		res.add(new CustomRes("images/earth.png", false, false));
 		res.add(new CustomRes("images/application.png", false, false));
 		res.add(new CustomRes("images/applications.png", false, false));
@@ -168,13 +169,14 @@ public class CytoscapeGraph extends SVWidgetBase {
 		res.add(new CustomRes("images/server.png", false, false));
 		res.add(new CustomRes("images/servers.png", false, false));
 
+		// css and js resource.
 		res.add(new CustomRes("main.css", true, true));
 		res.add(new CustomRes("jquery.js", true, false));
 		res.add(new CustomRes("ocanvas.min.js", true, false));
 		res.add(new CustomRes("cytoscape.js", true, false));
 		res.add(new CustomRes("cytoscape-edgehandles.js", true, false));
 		res.add(new CustomRes("cytoscape-node-resize.js", true, false));
-//		res.add(new CustomRes("menuPanel.js", true, false));
+		res.add(new CustomRes("graphConfig.js", true, false));
 		res.add(new CustomRes("CytoscapeMainGraph.js", true, false));
 		res.add(new CustomRes("handler.js", true, false));
 		return res;

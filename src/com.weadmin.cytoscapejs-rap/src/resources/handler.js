@@ -17,7 +17,7 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 			return new cytoscapejsgraph.cytoscapejshandler(properties);
 		},
 		destructor : "destroy",
-		methods: ["removeCells","loadGraphByJson","addOneNode","graphLayout","toSaveGraphJson"],
+		methods: ["removeCells","loadGraphByJson","addOneNode","addOneEdge","graphLayout","toSaveGraphJson"],
 		properties : ["size","jsontxt"],
 		events : ["Selection"]
 	});
@@ -88,12 +88,15 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 		addOneNode:function(obj){
 			this.mainGraph.addOneNode(obj);
 		},
+		addOneEdge:function(obj){
+			this.mainGraph.addOneEdge(obj);
+		},
 		removeCells:function(){
 			this.mainGraph.removeSelected();
 		},
 		graphLayout:function(obj){
 			var type = obj.type;
-			//TODO
+			this.mainGraph.graphLayout(type);
 		},
 		dispatchEvent : function (eventName,options) {
 			var remoteObject = rap.getRemoteObject(this);
