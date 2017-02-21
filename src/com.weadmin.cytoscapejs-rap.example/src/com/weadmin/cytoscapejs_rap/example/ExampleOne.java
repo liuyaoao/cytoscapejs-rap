@@ -95,14 +95,14 @@ public class ExampleOne extends AbstractEntryPoint{
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
+				cyGraph.graphZoom("zoomIn");
 			}
 		});
 		zoomOutBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO
+				cyGraph.graphZoom("zoomOut");
 			}
 		});
 		saveModifiedSvgBtn.addSelectionListener(new SelectionAdapter() {
@@ -114,7 +114,7 @@ public class ExampleOne extends AbstractEntryPoint{
 		});
 		Combo layout = new Combo(composite, SWT.DROP_DOWN);
 		layout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		layout.setItems(new String[]{"树型","圆型","堆型","随意","分层类型","网格"});
+		layout.setItems(new String[]{"树型","圆型","堆型","随意(arbor)","分层类型","广播扩散","弹性布局","cose布局"});
 		layout.setText("选择布局");
 		layout.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -123,7 +123,7 @@ public class ExampleOne extends AbstractEntryPoint{
 				int index = layout.getSelectionIndex();
 				switch (index) {
 				case 0:
-					cyGraph.graphLayout("tree");
+					cyGraph.graphLayout("dagre"); //this is tree layout.
 					break;
 				case 1:
 					cyGraph.graphLayout("circle");
@@ -132,13 +132,19 @@ public class ExampleOne extends AbstractEntryPoint{
 					cyGraph.graphLayout("concentric");
 					break;
 				case 3:
-					cyGraph.graphLayout("random");
+					cyGraph.graphLayout("arbor"); //this is random layout.
 					break;
 				case 4:
 					cyGraph.graphLayout("breadthfirst"); // breadthfirst == hierarchical
 					break;
 				case 5:
-					cyGraph.graphLayout("grid");
+					cyGraph.graphLayout("spread");
+					break;
+				case 6:
+					cyGraph.graphLayout("springy");
+					break;
+				case 7:
+					cyGraph.graphLayout("cose");
 					break;
 				default:
 					break;

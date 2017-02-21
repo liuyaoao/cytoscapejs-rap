@@ -63,6 +63,11 @@ public class CytoscapeGraph extends SVWidgetBase {
 		obj.add("type", type);
 		super.callRemoteMethod("graphLayout", obj);
 	}
+	public void graphZoom(String zoomType){
+		JsonObject obj = new JsonObject();
+		obj.add("type", zoomType);
+		super.callRemoteMethod("graphZoom", obj);
+	}
 	public void toSaveGraphJson(){
 		super.callRemoteMethod("toSaveGraphJson", new JsonObject());
 	}
@@ -174,9 +179,19 @@ public class CytoscapeGraph extends SVWidgetBase {
 		res.add(new CustomRes("jquery.js", true, false));
 		res.add(new CustomRes("ocanvas.min.js", true, false));
 		res.add(new CustomRes("cytoscape.js", true, false));
+		// layout extensions
+		res.add(new CustomRes("layout/springy.js", true, false));
+		res.add(new CustomRes("layout/cytoscape-springy.js", true, false));
+		res.add(new CustomRes("layout/arbor.js", true, false));
+		res.add(new CustomRes("layout/cytoscape-arbor.js", true, false));
+		res.add(new CustomRes("layout/dagre.js", true, false));
+		res.add(new CustomRes("layout/cytoscape-dagre.js", true, false));
+		res.add(new CustomRes("layout/cytoscape-spread.js", true, false));
+		// custom extensions
 		res.add(new CustomRes("cytoscape-edgehandles.js", true, false));
 		res.add(new CustomRes("cytoscape-node-resize.js", true, false));
 		res.add(new CustomRes("graphConfig.js", true, false));
+
 		res.add(new CustomRes("CytoscapeMainGraph.js", true, false));
 		res.add(new CustomRes("handler.js", true, false));
 		return res;

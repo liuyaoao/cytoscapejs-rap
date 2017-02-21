@@ -83,17 +83,6 @@
     }
   }];
 
-  var layout_random = {
-    name: 'random',
-    fit: true, // whether to fit to viewport
-    padding: 30, // fit padding
-    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-    animate: false, // whether to transition the node positions
-    animationDuration: 500, // duration of animation in ms if enabled
-    animationEasing: undefined, // easing of animation if enabled
-    ready: undefined, // callback on layoutready
-    stop: undefined // callback on layoutstop
-  };
   var layout_grid = {
     name: 'grid',
     fit: true, // whether to fit the viewport to the graph
@@ -132,7 +121,7 @@
 
   var layout_concentric = {
     name: 'concentric',
-    fit: false, // whether to fit the viewport to the graph
+    fit: true, // whether to fit the viewport to the graph
     padding: 30, // the padding on fit
     startAngle: 3 / 2 * Math.PI, // where nodes start in radians
     sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
@@ -159,24 +148,75 @@
   var layout_breadthfirst = {
     name: 'breadthfirst',
     fit: true, // whether to fit the viewport to the graph
-    directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
+    directed: true, // whether the tree is directed downwards (or edges can point in any direction if false)
     padding: 30, // padding on fit
     circle: false, // put depths in concentric circles if true, put depths top down if false
     spacingFactor: 1.75, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
     avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
     roots: undefined, // the roots of the trees
-    maximalAdjustments: 0, // how many times to try to position the nodes in a maximal way (i.e. no backtracking)
+    maximalAdjustments: 1, // how many times to try to position the nodes in a maximal way (i.e. no backtracking)
     animate: false, // whether to transition the node positions
     animationDuration: 500, // duration of animation in ms if enabled
     animationEasing: undefined, // easing of animation if enabled
     ready: undefined, // callback on layoutready
     stop: undefined // callback on layoutstop
   };
+  var layout_cose = {
+    name: 'cose',
+    ready: function(){}, // Called on `layoutready`
+    stop: function(){}, // Called on `layoutstop`
+    animate: true, // Whether to animate while running the layout
+    // The layout animates only after this many milliseconds
+    // (prevents flashing on fast runs)
+    animationThreshold: 250,
+    // Number of iterations between consecutive screen positions update
+    // (0 -> only updated on the end)
+    refresh: 20,
+    fit: true, // Whether to fit the network view after when done
+    padding: 30, // Padding on fit
+    boundingBox: undefined,   // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+    // Randomize the initial positions of the nodes (true) or use existing positions (false)
+    randomize: false,
+    componentSpacing: 100, // Extra spacing between components in non-compound graphs
+    // Node repulsion (non overlapping) multiplier
+    nodeRepulsion: function( node ){ return 400000; },
+    nodeOverlap: 10, // Node repulsion (overlapping) multiplier
+    // Ideal edge (non nested) length
+    idealEdgeLength: function( edge ){ return 10; },
+    edgeElasticity: function( edge ){ return 100; }, // Divisor to compute edge forces
+    nestingFactor: 5, // Nesting factor (multiplier) to compute ideal edge length for nested edges
+    gravity: 80, // Gravity force (constant)
+    numIter: 1000, // Maximum number of iterations to perform
+    initialTemp: 200,   // Initial temperature (maximum node displacement)
+    coolingFactor: 0.95, // Cooling factor (how the temperature is reduced between consecutive iterations
+    minTemp: 1.0, // Lower temperature threshold (below this point the layout will end)
+    useMultitasking: true // Whether to use threading to speed up the layout
+  };
+  var layout_dagre = {
+    name:'dagre',
+    // dagre algo options, uses default value on undefined
+    nodeSep: 100, // the separation between adjacent nodes in the same rank
+    edgeSep: 100, // the separation between adjacent edges in the same rank
+    rankSep: 100, // the separation between adjacent nodes in the same rank
+    rankDir: 'LR', // 'TB' for top to bottom flow, 'LR' for left to right
+    minLen: function( edge ){ return 1; }, // number of ranks to keep between the source and target of the edge
+    edgeWeight: function( edge ){ return 1; }, // higher weight edges are generally made shorter and straighter than lower weight edges
+    // general layout options
+    fit: true, // whether to fit to viewport
+    padding: 30, // fit padding
+    animate: false, // whether to transition the node positions
+    animationDuration: 500, // duration of animation in ms if enabled
+    animationEasing: undefined, // easing of animation if enabled
+    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+    ready: function(){}, // on layoutready
+    stop: function(){} // on layoutstop
+  };
   cxt.graphConfig.style = styleOptions;
-  cxt.graphConfig.layout_random = layout_random;
   cxt.graphConfig.layout_grid = layout_grid;
   cxt.graphConfig.layout_circle = layout_circle;
   cxt.graphConfig.layout_concentric = layout_concentric;
   cxt.graphConfig.layout_breadthfirst = layout_breadthfirst;
+  cxt.graphConfig.layout_cose = layout_cose;
+  cxt.graphConfig.layout_dagre = layout_dagre;
 })(window);

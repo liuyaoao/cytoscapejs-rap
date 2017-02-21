@@ -12,6 +12,7 @@
       this.uniqueId = options.uniqueId;
       this.dispatchEventCall = options.dispatchEventCall;
       this.graphContainer = null;
+      this.cyInstance = null;
       this.initGraphCfg = '';
       this.initElement();
     },
@@ -165,8 +166,15 @@
       // this.graphLayout("circle");
     },
     graphLayout:function(layoutType){
-      this.cyInstance.layout(graphConfig["layout_"+layoutType]);
+      var layoutOpt = graphConfig["layout_"+layoutType] || {name:layoutType};
+      this.cyInstance.layout(layoutOpt);
     },
+    graphZoom:function(zoomType){
+			var zoomLevel = this.cyInstance.zoom();
+      var newLevel = (zoomType=='zoomIn') ? (zoomLevel+zoomLevel*0.2) : (zoomLevel-zoomLevel*0.2);
+      this.cyInstance.zoom(newLevel);
+			this.cyInstance.center();
+		},
     getGraphJson:function(){
       return "'"+JSON.stringify(this.cyInstance.json())+"'";
     },
