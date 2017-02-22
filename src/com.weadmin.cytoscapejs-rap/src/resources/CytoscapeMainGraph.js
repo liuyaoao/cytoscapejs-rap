@@ -69,11 +69,7 @@
       var cy = cytoscape({
         container: document.getElementById('cytoscapegraph'),
         style:graphConfig.style,
-        elements: [
-          // { data: {id:'node_server', label: 'server' }, position:{x:20,y:20}, classes: 'bottom-center imgServer' },
-          // { data: {id:'node_servers', label: 'servers' },position:{x:60,y:60}, classes: 'bottom-center imgServers' },
-          // { data: { id:'edge_server',source:'node_server',target:'node_servers', label: 'edge_server' },classes:'textRotation' }
-        ]
+        elements: []
       });
       this.cyInstance = cy;
     },
@@ -150,10 +146,11 @@
       return str.substring(start+1,end);
     },
     addOneNode:function (options){ //新增一个节点。
+      var imgClass = options.shape?('img_'+options.shape):'img_applications';
       this.cyInstance.add({
           group: "nodes",
           data: { id:options.id,weight: options.width,height:options.height,label:options.value },
-          classes:'bottom-center imgApplications',
+          classes:'bottom-center '+imgClass,
           position: { x: options.x, y: options.y }
       });
     },

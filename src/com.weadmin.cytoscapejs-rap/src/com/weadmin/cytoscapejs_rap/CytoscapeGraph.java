@@ -23,7 +23,6 @@ public class CytoscapeGraph extends SVWidgetBase {
 	 private static final long serialVersionUID = -7580109674486263420L;
 	 private String tobeSaveJson = "";
 
-
 	public CytoscapeGraph(Composite parent, int style) {
 		super(parent,style);
 		this.addKeyListener(new KeyListener() {
@@ -173,6 +172,26 @@ public class CytoscapeGraph extends SVWidgetBase {
 		res.add(new CustomRes("images/equipment.png", false, false));
 		res.add(new CustomRes("images/server.png", false, false));
 		res.add(new CustomRes("images/servers.png", false, false));
+		res.add(new CustomRes("images/database.png", false, false));
+		res.add(new CustomRes("images/loadbalancing.png", false, false));
+		res.add(new CustomRes("images/firewall.png", false, false));
+		res.add(new CustomRes("images/middleware.png", false, false));
+		res.add(new CustomRes("images/network.png", false, false));
+		res.add(new CustomRes("images/storage.png", false, false));
+		res.add(new CustomRes("images/website.png", false, false));
+		res.add(new CustomRes("images/virtualmachine.png", false, false));
+		res.add(new CustomRes("images/wirelessnetwork.png", false, false));
+		res.add(new CustomRes("images/mailsystem.png", false, false));
+		res.add(new CustomRes("images/computerroomenvironment.png", false, false));
+		res.add(new CustomRes("images/error.png", false, false));
+		res.add(new CustomRes("images/forbid.png", false, false));
+		res.add(new CustomRes("images/good.png", false, false));
+		res.add(new CustomRes("images/unconn.png", false, false));
+		res.add(new CustomRes("images/warning.png", false, false));
+
+		res.add(new CustomRes("images/down.png", false, false));
+		res.add(new CustomRes("images/up.png", false, false));
+		res.add(new CustomRes("images/topubg.jpg", false, false));
 
 		// css and js resource.
 		res.add(new CustomRes("main.css", true, true));

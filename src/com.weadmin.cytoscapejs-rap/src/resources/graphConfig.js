@@ -42,31 +42,101 @@
     }
   },
   {
-    selector:'.imgServer',
+    selector:'.img_server',
     style:{
       'background-image':'rwt-resources/cytoscapejshandler/images/server.png',
-      'background-fit':'cover'
+      'background-fit':'contain'
     }
   },
   {
-    selector:'.imgServers',
+    selector:'.img_servers',
     style:{
       'background-image':'rwt-resources/cytoscapejshandler/images/servers.png',
-      'background-fit':'cover'
+      'background-fit':'contain'
     }
   },
   {
-    selector:'.imgApplication',
+    selector:'.img_application',
     style:{
       'background-image':'rwt-resources/cytoscapejshandler/images/application.png',
-      'background-fit':'cover'
+      'background-fit':'contain'
     }
   },
   {
-    selector:'.imgApplications',
+    selector:'.img_applications',
     style:{
       'background-image':'rwt-resources/cytoscapejshandler/images/applications.png',
-      'background-fit':'cover'
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_database',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/database.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_earth',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/earth.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_equipment',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/equipment.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_firewall',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/firewall.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_middleware',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/middleware.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_network',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/network.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_storage',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/storage.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_virtualmachine',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/virtualmachine.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_website',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/website.png',
+      'background-fit':'contain'
+    }
+  },
+  {
+    selector:'.img_wirelessnetwork',
+    style:{
+      'background-image':'rwt-resources/cytoscapejshandler/images/wirelessnetwork.png',
+      'background-fit':'contain'
     }
   },
   {

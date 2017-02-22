@@ -30,6 +30,7 @@ public class ExampleOne extends AbstractEntryPoint{
 	private static final long serialVersionUID = 1L;
 	private String graphJson = "";
 	private CytoscapeGraph cyGraph = null;
+	private String[] nodeImgArr = {"application","applications","server","servers","database","network","website","firewall","equipment","earth"};
 
 	@Override
 	protected void createContents(Composite parent) {
@@ -68,11 +69,14 @@ public class ExampleOne extends AbstractEntryPoint{
 				if (eventag.equals("tapblank")) { //click add new node and edge.
 					String nodeId = "nodeId_"+getRangeRandomNum(1,99999);
 					String edgeId = "edgeId_"+getRangeRandomNum(1,99999);
-					cyGraph.insertVertex(nodeId,"node",event.x,event.y,40,40,null);
+					int index = getRangeRandomNum(0,9);
+					String shapeType = nodeImgArr[index];
+
+					cyGraph.insertVertex(nodeId,"node",event.x,event.y,40,40,shapeType);
 					cyGraph.insertEdge(edgeId,"edge_label","node_servers",nodeId);
 				}else if(eventag.equals("graph_initialized")){
-					getGraphJsonByFileName("json00");
-					cyGraph.loadGraphByJson(graphJson);
+					getGraphJsonByFileName("json00"); //根据文件名读取初始化的图形数据
+					cyGraph.loadGraphByJson(graphJson); //加载渲染出图形
 				}else if(eventag.equals("savegraph")){
 					try {
 						FileUtils.writeStringToFile(new File("D:/liuyaoao/132.txt"), data,"utf-8");
@@ -181,15 +185,17 @@ public class ExampleOne extends AbstractEntryPoint{
     }catch(UnsupportedEncodingException e){
     	throw new IllegalArgumentException("Failed to load resources", e);
     }
-		cyGraph.setJsonTxt(graphJson);
+		cyGraph.setJsonTxt(graphJson); //缓存一下读取到的json文本。
 	}
+
+
+	//工具方法。
 	public static String getRandom(int t){
 		int i = (int) (Math.random()*t);
 		String s = (i<10?"0"+i:i+"");
 		return s;
 	}
 	private int getRangeRandomNum(int min, int max){
-
 		return (new Random().nextInt(max - min) + min);
 	}
 

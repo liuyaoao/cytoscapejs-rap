@@ -1,6 +1,8 @@
 package com.weadmin.cytoscapejs_rap.example;
 
 
+import java.util.Random;
+
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,12 +26,12 @@ public class ExampleTwo extends AbstractEntryPoint{
 		zoomInBtn.setText("zoomIn(+)");
 		Button zoomOutBtn = new Button(parent, SWT.PUSH);
 		zoomOutBtn.setText("zoomOut(-)");
-		
+
 		Combo combo = new Combo(parent, SWT.DROP_DOWN);
 		combo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		combo.setItems(new String[]{"svg011","svg00","svg01","svg02","svg03","svg04","svg05"});
 		combo.select(6);
-		
+
 		Button openPanelBtn = new Button(parent, SWT.PUSH);
 		openPanelBtn.setText("openPanel");
 		//add event listeners
@@ -40,13 +42,16 @@ public class ExampleTwo extends AbstractEntryPoint{
 //				deviceSvg.refreshAll(createStatusArr(50),createTooltipArr(50));
 			}
 		});
-		
+
 	}
 
 	public static String getRandom(int t){
 		int i = (int) (Math.random()*t);
 		String s = (i<10?"0"+i:i+"");
 		return s;
+	}
+	private int getRangeRandomNum(int min, int max){
+		return (new Random().nextInt(max - min) + min);
 	}
 
 
