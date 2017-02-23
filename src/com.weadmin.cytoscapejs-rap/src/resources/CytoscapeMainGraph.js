@@ -11,6 +11,7 @@
       this.container = options.container;
       this.uniqueId = options.uniqueId;
       this.dispatchEventCall = options.dispatchEventCall;
+      this.callServerMethodCall = options.callServerMethodCall;
       this.graphContainer = null;
       this.cyInstance = null;
       this.initGraphCfg = '';
@@ -50,19 +51,48 @@
           // console.log('tap on some element');
         }
       });
+      cy.on('cxttap',function(event){ //mouse right click。
+        var evtTarget = event.cyTarget;
+        if(evtTarget !== cy){
+          console.log('right click event:',event);
+          
+          _this.callServerMethodCall('right_click',{
+              id:evtTarget._private.data['id'],
+              label:evtTarget._private.data['label'],
+              x:event.cyPosition.x,
+              y:event.cyPosition.y
+            });
+        }
+      });
       cy.on('tap', 'edge',function(event){ //click one edge line.
         var evtTarget = event.cyTarget;
         // cy.edges('.edgeSelected').removeClass("edgeSelected");
         evtTarget.toggleClass('edgeSelected');
         console.log('tap on edge: ',event);
       });
-      cy.on('mouseover', 'node', function(evt){
-        var node = evt.cyTarget;
-        console.log( "mouse over event!!mouseover:" + node.id() );
+      cy.on('tap', 'node',function(event){ //click one edge line.
+        var evtTarget = event.cyTarget;
+        console.log('tap on node: ',event);
       });
-      cy.on('mouseout', 'node', function(evt){
-        var node = evt.cyTarget;
-        console.log( "mouse over event:" + node.id() );
+      cy.on('mouseover', 'node', function(event){
+        var node = event.cyTarget;
+        console.log( "node:mouse over event:" + node.id() );
+        _this.callServerMethodCall(graphConfig.event.MOUSE_HOVER,{
+            id:node.id(),
+            label:node._private.data['label'],
+            x:event.cyPosition.x,
+            y:event.cyPosition.y
+          });
+      });
+      cy.on('mouseout', 'node', function(event){
+        var node = event.cyTarget;
+        console.log( "node:mouse out event:" + node.id() );
+        _this.callServerMethodCall(graphConfig.event.MOUSE_LEAVE,{
+            id:node.id(),
+            label:node._private.data['label'],
+            x:event.cyPosition.x,
+            y:event.cyPosition.y
+          });
       });
     },
     initGraphOptions:function(){

@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -12,18 +15,24 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import com.cytoscape.util.cyEventObject;
+import com.cytoscape.util.cyEventSource.cyIEventListener;
 import com.weadmin.cytoscapejs_rap.CytoscapeGraph;
+import com.weadmin.cytoscapejs_rap.CytoscapeGraph.CyGraphEvent;
 
 public class ExampleOne extends AbstractEntryPoint{
 
@@ -32,8 +41,16 @@ public class ExampleOne extends AbstractEntryPoint{
 	private CytoscapeGraph cyGraph = null;
 	private String[] nodeImgArr = {"application","applications","server","servers","database","network","website","firewall","equipment","earth"};
 
+	private Label hoverText;
+	private Display display;
+	Label title;
+	String lastids;
+	ArrayList<String> ids;
+	static ArrayList<String> edgeids;
+	
 	@Override
 	protected void createContents(Composite parent) {
+		display = Display.getCurrent();
 		parent.setLayout(new GridLayout(3,false));
 //		parent.setLayout(null);
 		Composite parents = new Composite(parent, SWT.NONE);
@@ -88,6 +105,44 @@ public class ExampleOne extends AbstractEntryPoint{
 				}
 			}
 		});
+		hoverText = new Label(cyGraph, SWT.BORDER);
+		hoverText.setVisible(false);
+		hoverText.setSize(100, 40);
+		hoverText.setForeground(new Color(Display.getCurrent(), 255, 0, 0));
+		cyGraph.addGraphListener(new cyIEventListener(){
+			@Override
+			public void invoke(Object sender, cyEventObject evt) {
+				display.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+//						s.select(s.getItem(0));
+					}
+				});
+				System.out.println("listener:"+evt.getName()+":"+evt.getProperties());
+				if (evt.getName().equals("isCompleted")) {
+					boolean isCompleted = (boolean) evt.getProperty("isCompleted"); //no use.
+					System.out.println("初始化完成，开始载入数据...");
+				}
+				if(evt.getName().equals("right_click")){
+					System.out.println("鼠标右键...");
+				}
+				if (evt.getName().equals(CyGraphEvent.MOUSE_DOWN)){
+					double x = (double) evt.getProperty("x");
+					double y = (double) evt.getProperty("y");
+				}else if (evt.getName().equals(CyGraphEvent.MOUSE_HOVER)){
+					double x = (double) evt.getProperty("x");
+					double y = (double) evt.getProperty("y");
+					//String id = (String) evt.getProperty("id");
+					hoverText.setText("aaaaaa");
+					hoverText.pack();
+					hoverText.setLocation((int)x, (int)y);
+					hoverText.setVisible(true);
+				}else if (evt.getName().equals(CyGraphEvent.MOUSE_LEAVE)){
+					hoverText.setVisible(false);
+				}
+			}
+		});
+		
 		refreshBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -188,7 +243,11 @@ public class ExampleOne extends AbstractEntryPoint{
 		cyGraph.setJsonTxt(graphJson); //缓存一下读取到的json文本。
 	}
 
-
+	
+	
+	private String getId(){
+		return UUID.randomUUID().toString();
+	}
 	//工具方法。
 	public static String getRandom(int t){
 		int i = (int) (Math.random()*t);

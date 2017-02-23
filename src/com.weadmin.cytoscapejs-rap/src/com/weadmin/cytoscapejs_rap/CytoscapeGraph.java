@@ -1,9 +1,13 @@
 package com.weadmin.cytoscapejs_rap;
 
+//import java.awt.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Vector;
+import java.util.List;
+
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.json.JsonArray;
@@ -12,27 +16,46 @@ import org.eclipse.swt.internal.SWTEventListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
+
+import com.cytoscape.util.cyEvent;
+import com.cytoscape.util.cyEventObject;
+import com.cytoscape.util.cyEventSource.cyIEventListener;
+
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 
 @SuppressWarnings("restriction")
 public class CytoscapeGraph extends SVWidgetBase {
 
+	public static class CyGraphEvent{
+			public static String MOUSE_DOWN = "onMouseDown";
+			public static String NODE_SELECT = "onNodeSelect";
+			public static String EDGE_SELECT = "onEdgeSelect";
+			public static String EDGE_Connect = "onConnect";
+			public static String MOUSE_HOVER = "onMouseHover";
+			public static String MOUSE_LEAVE = "onMouseLeave";
+			public static String CELL_REMOVE = cyEvent.CELLS_REMOVED;
+			public static String CELL_MOVED = cyEvent.CELLS_MOVED;
+			public static String CELL_RESIZE = cyEvent.CELLS_RESIZED;
+			public static String CELL_CONNECT = cyEvent.CELL_CONNECTED;
+			public static String CONTENT_COMPLETED = "isCompleted";
+			public static String OPEN_GRAPH = "OpenGraph";
+		};
+
 	 @SuppressWarnings("unused")
 	private static final String REMOTE_TYPE = "cytoscapejsgraph.cytoscapejshandler";
 	 private static final long serialVersionUID = -7580109674486263420L;
 	 private String tobeSaveJson = "";
+	 private List<cyIEventListener>  graphListeners;
 
 	public CytoscapeGraph(Composite parent, int style) {
 		super(parent,style);
+		graphListeners = new Vector<>();
 		this.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// TODO Auto-generated method stub
-
 			}
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.DEL){
@@ -137,7 +160,41 @@ public class CytoscapeGraph extends SVWidgetBase {
 
 	@Override
 	protected void handleCallMethod(String method, JsonObject parameters) {
-		// System.out.println("handleCallMethod :"+method);
+		if (method.equals(CyGraphEvent.MOUSE_DOWN)||method.equals(CyGraphEvent.NODE_SELECT)
+				||method.equals(CyGraphEvent.EDGE_SELECT)||method.equals(CyGraphEvent.MOUSE_HOVER)
+				||method.equals(CyGraphEvent.MOUSE_LEAVE)){
+			double x = parameters.get("x").asDouble();
+			double y = parameters.get("y").asDouble();
+			cyEventObject event = new cyEventObject(method,"x",x,"y",y);
+			if (parameters.get("id")!=null){
+				event.getProperties().put("id", parameters.get("id").asString());
+			}
+			if (parameters.get("edge")!=null&&parameters.get("edge").isBoolean()){
+				event.getProperties().put("edge", parameters.get("edge").asBoolean());
+			}
+			invokeCyListener(event);
+		}
+		if (method.equals(CyGraphEvent.CELL_REMOVE)||method.equals(CyGraphEvent.CELL_MOVED)
+				||method.equals(CyGraphEvent.CELL_RESIZE)){
+			JsonArray ids = parameters.get("ids").asArray();
+
+			cyEventObject event = new cyEventObject(method,"id",ids);
+			invokeCyListener(event);
+		}
+
+		if (method.equals(CyGraphEvent.CELL_CONNECT)){
+			JsonValue edge = parameters.get("edge");
+			String terminal = parameters.get("terminal").asString();
+			boolean source = parameters.get("source").asBoolean();
+
+			cyEventObject event = new cyEventObject(method,"edge",edge,"terminal",terminal,"source",source);
+			if (parameters.get("previous")!=null){
+				String previous = parameters.get("previous").asString();
+				event.getProperties().put("previous", previous);
+			}
+			invokeCyListener(event);
+		}
+		//TODO
 	}
 
 	@Override
@@ -152,12 +209,19 @@ public class CytoscapeGraph extends SVWidgetBase {
 			}else if(event.text.toLowerCase().equals("graph_initialized")){
 			}else if(event.text.toLowerCase().equals("savegraph")){
 			}else if(event.text.toLowerCase().equals("xxxxxxx")){
-				//TODO
 			}
 			notifyListeners(SWT.Selection, event);
 		}
 	}
 
+	private void invokeCyListener(cyEventObject event){
+		for (cyIEventListener l:graphListeners){
+			l.invoke(this, event);
+		}
+	}
+	public void addGraphListener(cyIEventListener l){
+		graphListeners.add(l);
+	}
 	@Override
 	protected String getWidgetName() {
 		return "cytoscapejshandler";

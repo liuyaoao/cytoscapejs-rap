@@ -25,7 +25,7 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 	cytoscapejsgraph.cytoscapejshandler = function(properties) {
 		this._parent = rap.getObject(properties.parent);
 		bindAll(this, [ "destroy", "onSend", "onRender", "refreshSize", "updateContainerSize","resizeLayout",
-										"dispatchEvent","addOneNode"]);
+										"dispatchEvent","addOneNode","callServerMethod"]);
 		this.element = document.createElement("div");
 		this.element.style.position = 'absolute';
 		this.element.style.top = '0';
@@ -55,6 +55,9 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 					uniqueId:this._uniqueId,
 					dispatchEventCall:function(evtName,opt){
 						_this.dispatchEvent(evtName,opt);
+					},
+					callServerMethodCall:function(methodName,obj){
+						_this.callServerMethod(methodName,obj);
 					}
 				});
 				setTimeout(function(){
@@ -123,6 +126,11 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 			}
 			remoteObject.notify("Selection", obj);
 		},
+
+		callServerMethod:function(methodName,obj){
+			var remoteObj = rap.getRemoteObject(this);
+			remoteObj.call(methodName,obj);
+		},
 		// 大小自适应
 		resizeLayout : function() {
 			if (this.ready) {
@@ -144,6 +152,8 @@ var IMAGE_PATH = MXGRAPH_BASEPATH +'images';
 			}
 		}
 	};
+
+	// global functions
 	var bind = function(context, method) {
 		return function() {
 			return method.apply(context, arguments);

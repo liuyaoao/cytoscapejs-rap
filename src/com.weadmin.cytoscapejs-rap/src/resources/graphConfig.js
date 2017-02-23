@@ -289,4 +289,14 @@
   cxt.graphConfig.layout_breadthfirst = layout_breadthfirst;
   cxt.graphConfig.layout_cose = layout_cose;
   cxt.graphConfig.layout_dagre = layout_dagre;
+
+  cxt.graphConfig.event = {
+    MOUSE_HOVER:"onMouseHover",
+    MOUSE_LEAVE:"onMouseLeave",
+    NODE_SELECT:"onNodeSelect",
+    EDGE_SELECT:"onEdgeSelect"
+  };
+
+
+
 })(window);
