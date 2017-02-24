@@ -55,7 +55,7 @@
         var evtTarget = event.cyTarget;
         if(evtTarget !== cy){
           console.log('right click event:',event);
-          
+
           _this.callServerMethodCall('right_click',{
               id:evtTarget._private.data['id'],
               label:evtTarget._private.data['label'],
@@ -74,26 +74,26 @@
         var evtTarget = event.cyTarget;
         console.log('tap on node: ',event);
       });
-      cy.on('mouseover', 'node', function(event){
-        var node = event.cyTarget;
-        console.log( "node:mouse over event:" + node.id() );
-        _this.callServerMethodCall(graphConfig.event.MOUSE_HOVER,{
-            id:node.id(),
-            label:node._private.data['label'],
-            x:event.cyPosition.x,
-            y:event.cyPosition.y
-          });
-      });
-      cy.on('mouseout', 'node', function(event){
-        var node = event.cyTarget;
-        console.log( "node:mouse out event:" + node.id() );
-        _this.callServerMethodCall(graphConfig.event.MOUSE_LEAVE,{
-            id:node.id(),
-            label:node._private.data['label'],
-            x:event.cyPosition.x,
-            y:event.cyPosition.y
-          });
-      });
+      // cy.on('mouseover', 'node', function(event){
+      //   var node = event.cyTarget;
+      //   console.log( "node:mouse over event:" + node.id() );
+      //   _this.callServerMethodCall(graphConfig.event.MOUSE_HOVER,{
+      //       id:node.id(),
+      //       label:node._private.data['label'],
+      //       x:event.cyPosition.x,
+      //       y:event.cyPosition.y
+      //     });
+      // });
+      // cy.on('mouseout', 'node', function(event){
+      //   var node = event.cyTarget;
+      //   console.log( "node:mouse out event:" + node.id() );
+      //   _this.callServerMethodCall(graphConfig.event.MOUSE_LEAVE,{
+      //       id:node.id(),
+      //       label:node._private.data['label'],
+      //       x:event.cyPosition.x,
+      //       y:event.cyPosition.y
+      //     });
+      // });
     },
     initGraphOptions:function(){
       var cy = cytoscape({
@@ -102,6 +102,7 @@
         elements: []
       });
       this.cyInstance = cy;
+      this.cyInstance.elements().qtip(graphConfig.qtipOptions);
     },
     initGraphExtension:function(){
       var cy = this.cyInstance;
@@ -169,6 +170,9 @@
       var sttr = json.substr(json.indexOf("'")+1,json.lastIndexOf("'")-1);
       this.cyInstance.json(JSON.parse(sttr));
       this.cyInstance.json({style:graphConfig.style});
+      setTimeout(function(){
+        this.cyInstance.elements().qtip(graphConfig.qtipOptions);
+      },500);
     },
     getValueFromStr:function(str){
       var start = str.indexOf('(');
@@ -183,6 +187,7 @@
           classes:'bottom-center '+imgClass,
           position: { x: options.x, y: options.y }
       });
+
     },
     addOneEdge:function(opt){
       this.cyInstance.add({

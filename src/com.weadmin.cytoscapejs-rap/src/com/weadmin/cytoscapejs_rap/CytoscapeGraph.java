@@ -259,6 +259,8 @@ public class CytoscapeGraph extends SVWidgetBase {
 
 		// css and js resource.
 		res.add(new CustomRes("main.css", true, true));
+		res.add(new CustomRes("ui/jquery.qtip.css", true, true));
+
 		res.add(new CustomRes("jquery.js", true, false));
 		res.add(new CustomRes("ocanvas.min.js", true, false));
 		res.add(new CustomRes("cytoscape.js", true, false));
@@ -270,6 +272,10 @@ public class CytoscapeGraph extends SVWidgetBase {
 		res.add(new CustomRes("layout/dagre.js", true, false));
 		res.add(new CustomRes("layout/cytoscape-dagre.js", true, false));
 		res.add(new CustomRes("layout/cytoscape-spread.js", true, false));
+		// UI extensions
+		res.add(new CustomRes("ui/jquery.qtip.js", true, false));
+		res.add(new CustomRes("ui/cytoscape-qtip.js", true, false));
+
 		// custom extensions
 		res.add(new CustomRes("cytoscape-edgehandles.js", true, false));
 		res.add(new CustomRes("cytoscape-node-resize.js", true, false));

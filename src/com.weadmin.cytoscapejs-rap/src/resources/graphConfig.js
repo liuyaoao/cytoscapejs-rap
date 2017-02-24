@@ -282,6 +282,30 @@
     ready: function(){}, // on layoutready
     stop: function(){} // on layoutstop
   };
+  var qtipOptions = {
+  		content: {
+  				text:'<span style="font-weight:200;">tips on elements!</span>',
+  				title:''
+  		},
+  		show:{
+  			event:'mouseover'
+  		},
+  		hide:{
+  			event:'mouseout'
+  		},
+  		position: {
+  			adjust:{cyViewport:true},
+  			my: 'top center',
+  			at: 'bottom center'
+  		},
+  		style: {
+  			classes: 'qtip-bootstrap',
+  			tip: {
+  				width: 16,
+  				height: 8
+  			}
+  		}
+	};
   cxt.graphConfig.style = styleOptions;
   cxt.graphConfig.layout_grid = layout_grid;
   cxt.graphConfig.layout_circle = layout_circle;
@@ -297,6 +321,6 @@
     EDGE_SELECT:"onEdgeSelect"
   };
 
-
+  cxt.graphConfig.qtipOptions = qtipOptions;
 
 })(window);
