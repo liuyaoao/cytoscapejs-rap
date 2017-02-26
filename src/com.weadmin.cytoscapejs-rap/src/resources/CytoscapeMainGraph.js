@@ -166,12 +166,13 @@
   		});
     },
     loadGraphByJson:function(json){
+      var _this = this;
       json = json.replace(/\n/g,"\\n");
       var sttr = json.substr(json.indexOf("'")+1,json.lastIndexOf("'")-1);
       this.cyInstance.json(JSON.parse(sttr));
       this.cyInstance.json({style:graphConfig.style});
       setTimeout(function(){
-        this.cyInstance.elements().qtip(graphConfig.qtipOptions);
+        _this.cyInstance.elements().qtip(graphConfig.qtipOptions);
       },500);
     },
     getValueFromStr:function(str){
